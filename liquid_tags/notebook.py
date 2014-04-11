@@ -304,7 +304,6 @@ def notebook(preprocessor, tag, markup):
         subcell_kwarg = dict(transformers=[SubCell])
     
     exporter = HTMLExporter(config=c,
-                            #template="/Users/keshavan/BioE/rotation/henry/bioe_rotation3/notebooks/10297417/output_toggle_html.tpl",
                             template_file='basic',
                             filters={'highlight2html': custom_highlighter},
                             extra_loaders=[pelican_loader],
