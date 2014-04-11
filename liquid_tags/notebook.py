@@ -93,8 +93,25 @@ div.entry-content {
   overflow: visible;
   padding: 8px;
 }
+
+.input_hidden {
+  display: none;
+//  margin-top: 5px;
+}
+
 .input_area {
   padding: 0.2em;
+  display: none;
+}
+
+.input {
+  padding: 0.2em;
+  display: none;
+}
+
+.input_prompt {
+  padding: 0.2em;
+  display: none;
 }
 
 a.heading-anchor {
@@ -213,11 +230,18 @@ pelican_loader = DictLoader({'pelicanhtml.tpl':
 <div class="box-flex1 output_subarea output_pyerr">
 <pre class="ipynb">{{super()}}</pre>
 </div>
-{%- endblock pyerr %}
+{% endblock pyerr %}
 
 {%- block data_text %}
-<pre class="ipynb">{{output.text | ansi2html}}</pre>
+<pre class="ipynb">{{outut.text | ansi2html}}</pre>
 {%- endblock -%}
+
+{% block input_group -%}
+<div class="input_hidden">
+{{ super() }}
+</div>
+{% endblock input_group %}
+
 """})
 
 
@@ -280,6 +304,7 @@ def notebook(preprocessor, tag, markup):
         subcell_kwarg = dict(transformers=[SubCell])
     
     exporter = HTMLExporter(config=c,
+                            #template="/Users/keshavan/BioE/rotation/henry/bioe_rotation3/notebooks/10297417/output_toggle_html.tpl",
                             template_file='basic',
                             filters={'highlight2html': custom_highlighter},
                             extra_loaders=[pelican_loader],
