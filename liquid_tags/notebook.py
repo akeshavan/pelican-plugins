@@ -94,26 +94,6 @@ div.entry-content {
   padding: 8px;
 }
 
-.input_hidden {
-  display: none;
-//  margin-top: 5px;
-}
-
-.input_area {
-  padding: 0.2em;
-  display: none;
-}
-
-.input {
-  padding: 0.2em;
-  display: none;
-}
-
-.input_prompt {
-  padding: 0.2em;
-  display: none;
-}
-
 a.heading-anchor {
  white-space: normal;
 }
@@ -168,6 +148,32 @@ init_mathjax = function() {
 }
 init_mathjax();
 </script>
+"""
+
+HIDE_CODE_CSS = """
+
+<style type="text/css">
+.input_hidden {
+  display: none;
+//  margin-top: 5px;
+}
+
+.input_area {
+  padding: 0.2em;
+  display: none;
+}
+
+.input {
+  padding: 0.2em;
+  display: none;
+}
+
+.input_prompt {
+  padding: 0.2em;
+  display: none;
+}
+</style>
+
 """
 
 CSS_WRAPPER = """
@@ -314,6 +320,15 @@ def notebook(preprocessor, tag, markup):
     with open(nb_path) as f:
         nb_text = f.read()
     nb_json = nbformat.reads_json(nb_text)
+
+    #AK: By default, hide code
+    keep_code = False
+    # AK: But if its in the metadata of the notebook, keep it.
+    if "keep_code" in nb_json['metadata'].keys():
+        if nb_json["metadata"]["keep_code"]:
+            keep_code = True
+
+
     (body, resources) = exporter.from_notebook_node(nb_json)
 
     # if we haven't already saved the header, save it here.
@@ -324,7 +339,8 @@ def notebook(preprocessor, tag, markup):
         header = '\n'.join(CSS_WRAPPER.format(css_line)
                            for css_line in resources['inlining']['css'])
         header += JS_INCLUDE
-
+        if not keep_code:
+            header += HIDE_CODE_CSS 
         with open('_nb_header.html', 'w') as f:
             f.write(header)
         notebook.header_saved = True
