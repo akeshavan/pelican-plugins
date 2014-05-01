@@ -238,15 +238,15 @@ pelican_loader = DictLoader({'pelicanhtml.tpl':
 </div>
 {% endblock pyerr %}
 
-{%- block data_text %}
-<pre class="ipynb">{{outut.text | ansi2html}}</pre>
-{%- endblock -%}
-
 {% block input_group -%}
 <div class="input_hidden">
 {{ super() }}
 </div>
 {% endblock input_group %}
+
+{%- block data_text %}
+<pre class="ipynb">{{outut.text | ansi2html}}</pre>
+{%- endblock -%}
 
 """})
 
@@ -328,9 +328,11 @@ def notebook(preprocessor, tag, markup):
         if nb_json["metadata"]["keep_code"]:
             keep_code = True
 
-
     (body, resources) = exporter.from_notebook_node(nb_json)
-
+    
+    if not keep_code:
+        body = HIDE_CODE_CSS + body
+ 
     # if we haven't already saved the header, save it here.
     if not notebook.header_saved:
         print ("\n ** Writing styles to _nb_header.html: "
@@ -339,8 +341,8 @@ def notebook(preprocessor, tag, markup):
         header = '\n'.join(CSS_WRAPPER.format(css_line)
                            for css_line in resources['inlining']['css'])
         header += JS_INCLUDE
-        if not keep_code:
-            header += HIDE_CODE_CSS 
+           
+             
         with open('_nb_header.html', 'w') as f:
             f.write(header)
         notebook.header_saved = True
